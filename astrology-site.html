@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kozmik Vizyon - Astroloji ve Gelecek Tahminleri</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+        
+        :root {
+            --deep-space: #0a0e27;
+            --midnight-blue: #1a1f3a;
+            --cosmic-purple: #6b4ce6;
+            --stardust-gold: #ffd700;
+            --nebula-pink: #ff6b9d;
+            --celestial-teal: #4ecdc4;
+            --moon-silver: #c0c0d8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--deep-space);
+            color: var(--moon-silver);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* Animated starfield background */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, var(--midnight-blue) 0%, transparent 100%);
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            background: linear-gradient(135deg, var(--stardust-gold), var(--nebula-pink), var(--cosmic-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--celestial-teal);
+            font-style: italic;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background: rgba(26, 31, 58, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            border: 1px solid rgba(107, 76, 230, 0.3);
+            box-shadow: 0 8px 32px rgba(107, 76, 230, 0.1);
+            animation: fadeInUp 1s ease-out both;
+        }
+        
+        .card:nth-child(2) { animation-delay: 0.6s; }
+        .card:nth-child(3) { animation-delay: 0.8s; }
+        
+        .card h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--stardust-gold);
+            margin-bottom: 25px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        
+        .form-group {
+            margin: 25px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            color: var(--celestial-teal);
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--cosmic-purple);
+            background: rgba(10, 14, 39, 0.8);
+            color: var(--moon-silver);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--stardust-gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .button {
+            width: 100%;
+            padding: 18px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--nebula-pink));
+            color: white;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 25px rgba(107, 76, 230, 0.4);
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(107, 76, 230, 0.6);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .results.active {
+            display: block;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .natal-chart {
+            margin: 30px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(107, 76, 230, 0.1), rgba(255, 107, 157, 0.1));
+            border-radius: 15px;
+            border: 1px solid var(--cosmic-purple);
+        }
+        
+        .planet-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(10, 14, 39, 0.5);
+            border-radius: 10px;
+            border-left: 4px solid var(--stardust-gold);
+            transition: all 0.3s ease;
+        }
+        
+        .planet-item:hover {
+            transform: translateX(10px);
+            background: rgba(10, 14, 39, 0.8);
+        }
+        
+        .planet-name {
+            font-weight: 600;
+            color: var(--stardust-gold);
+            font-size: 1.2rem;
+        }
+        
+        .planet-sign {
+            color: var(--celestial-teal);
+            font-style: italic;
+        }
+        
+        .transit-item {
+            padding: 20px;
+            margin: 15px 0;
+            background: rgba(255, 107, 157, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid var(--nebula-pink);
+        }
+        
+        .transit-date {
+            font-weight: 600;
+            color: var(--nebula-pink);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .transit-desc {
+            color: var(--moon-silver);
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .zodiac-wheel {
+            width: 300px;
+            height: 300px;
+            margin: 30px auto;
+            position: relative;
+            border: 3px solid var(--stardust-gold);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(107, 76, 230, 0.2), transparent);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .info-box {
+            padding: 20px;
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--celestial-teal);
+        }
+        
+        .info-box h3 {
+            color: var(--celestial-teal);
+            font-family: 'Cinzel', serif;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            color: var(--moon-silver);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .warning {
+            background: rgba(255, 107, 157, 0.15);
+            border: 1px solid var(--nebula-pink);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: var(--moon-silver);
+        }
+        
+        .warning strong {
+            color: var(--nebula-pink);
+        }
+    </style>
+</head>
+<body>
+    <div class="starfield" id="starfield"></div>
+    
+    <header>
+        <h1>✨ KOZMİK VİZYON ✨</h1>
+        <p class="subtitle">Doğum Haritanız ve Geleceğiniz</p>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2>🌙 Doğum Bilgileriniz</h2>
+            <div class="warning">
+                <strong>Not:</strong> Bu site eğlence amaçlıdır. Astrolojik yorumlar genel bilgi içindir ve kişisel tavsiye olarak değerlendirilmemelidir. Önemli kararlarınızı profesyonel danışmanlarla görüşerek alın.
+            </div>
+            <form id="birthForm">
+                <div class="form-group">
+                    <label for="birthDate">Doğum Tarihi:</label>
+                    <input type="date" id="birthDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="birthTime">Doğum Saati:</label>
+                    <input type="time" id="birthTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="birthPlace">Doğum Yeri:</label>
+                    <input type="text" id="birthPlace" placeholder="Şehir, Ülke" required>
+                </div>
+                <button type="submit" class="button">Kozmik Haritamı Oluştur ✨</button>
+            </form>
+        </div>
+        
+        <div id="results" class="results">
+            <div class="card">
+                <h2>🌟 Doğum Haritanız</h2>
+                <div class="zodiac-wheel"></div>
+                <div id="natalChart" class="natal-chart"></div>
+            </div>
+            
+            <div class="card">
+                <h2>🔮 Yaklaşan Önemli Olaylar</h2>
+                <div id="upcomingEvents"></div>
+            </div>
+            
+            <div class="card">
+                <h2>🌌 Detaylı Astrolojik Analiz</h2>
+                <div class="grid-layout">
+                    <div class="info-box">
+                        <h3>Güneş Burcunuz</h3>
+                        <p id="sunSign"></p>
+                    </div>
+                    <div class="info-box">
+                        <h3>Ay Burcunuz</h3>
+                        <p id="moonSign"></p>
+                    </div>
+                    <div class="info-box">
+                        <h3>Yükselen Burcunuz</h3>
+                        <p id="risingSign"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>✨ Kozmik Vizyon - Yıldızların Işığında Geleceğe Bakın ✨</p>
+        <p>Astroloji eğlence ve kişisel gelişim amaçlıdır</p>
+    </footer>
+
+    <script>
+        // Create animated starfield
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = Math.random() * 3 + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starfield.appendChild(star);
+            }
+        }
+        
+        createStarfield();
+        
+        // Zodiac signs data
+        const zodiacSigns = [
+            { name: 'Koç', start: [3, 21], end: [4, 19], element: 'Ateş', ruler: 'Mars' },
+            { name: 'Boğa', start: [4, 20], end: [5, 20], element: 'Toprak', ruler: 'Venüs' },
+            { name: 'İkizler', start: [5, 21], end: [6, 20], element: 'Hava', ruler: 'Merkür' },
+            { name: 'Yengeç', start: [6, 21], end: [7, 22], element: 'Su', ruler: 'Ay' },
+            { name: 'Aslan', start: [7, 23], end: [8, 22], element: 'Ateş', ruler: 'Güneş' },
+            { name: 'Başak', start: [8, 23], end: [9, 22], element: 'Toprak', ruler: 'Merkür' },
+            { name: 'Terazi', start: [9, 23], end: [10, 22], element: 'Hava', ruler: 'Venüs' },
+            { name: 'Akrep', start: [10, 23], end: [11, 21], element: 'Su', ruler: 'Plüton' },
+            { name: 'Yay', start: [11, 22], end: [12, 21], element: 'Ateş', ruler: 'Jüpiter' },
+            { name: 'Oğlak', start: [12, 22], end: [1, 19], element: 'Toprak', ruler: 'Satürn' },
+            { name: 'Kova', start: [1, 20], end: [2, 18], element: 'Hava', ruler: 'Uranüs' },
+            { name: 'Balık', start: [2, 19], end: [3, 20], element: 'Su', ruler: 'Neptün' }
+        ];
+        
+        function getZodiacSign(date) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            for (let sign of zodiacSigns) {
+                const [startMonth, startDay] = sign.start;
+                const [endMonth, endDay] = sign.end;
+                
+                if ((month === startMonth && day >= startDay) || 
+                    (month === endMonth && day <= endDay)) {
+                    return sign;
+                }
+            }
+            return zodiacSigns[0];
+        }
+        
+        function calculateRisingSign(birthTime) {
+            const hour = parseInt(birthTime.split(':')[0]);
+            const index = Math.floor((hour * 2) / 4) % 12;
+            return zodiacSigns[index];
+        }
+        
+        function calculateMoonSign(date) {
+            const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+            const index = Math.floor((dayOfYear * 12) / 365) % 12;
+            return zodiacSigns[index];
+        }
+        
+        function generateNatalChart(birthDate, birthTime) {
+            const sunSign = getZodiacSign(birthDate);
+            const moonSign = calculateMoonSign(birthDate);
+            const risingSign = calculateRisingSign(birthTime);
+            
+            const planets = [
+                { name: '☉ Güneş', sign: sunSign.name, meaning: 'Temel kişiliğiniz ve yaşam amacınız' },
+                { name: '☽ Ay', sign: moonSign.name, meaning: 'Duygusal dünyanız ve içsel benliğiniz' },
+                { name: '☿ Merkür', sign: zodiacSigns[Math.floor(Math.random() * 12)].name, meaning: 'İletişim tarzınız ve düşünce yapınız' },
+                { name: '♀ Venüs', sign: zodiacSigns[Math.floor(Math.random() * 12)].name, meaning: 'Aşk yaşamınız ve değerleriniz' },
+                { name: '♂ Mars', sign: zodiacSigns[Math.floor(Math.random() * 12)].name, meaning: 'Enerjiniz ve eylem tarzınız' },
+                { name: '♃ Jüpiter', sign: zodiacSigns[Math.floor(Math.random() * 12)].name, meaning: 'Şans ve genişleme alanlarınız' },
+                { name: '♄ Satürn', sign: zodiacSigns[Math.floor(Math.random() * 12)].name, meaning: 'Sorumluluklar ve dersleriniz' }
+            ];
+            
+            return { sunSign, moonSign, risingSign, planets };
+        }
+        
+        function generateUpcomingEvents(birthDate) {
+            const now = new Date();
+            const events = [];
+            
+            // Generate realistic astrological transit events
+            const transits = [
+                {
+                    planet: 'Jüpiter',
+                    event: 'Kariyer ve Başarı Dönemi',
+                    desc: 'Jüpiter\'in olumlu etkisi altında iş hayatınızda yükseliş, terfi fırsatları ve finansal kazançlar bekleniyor. Yeni projeler başlatmak için ideal bir dönem.',
+                    months: 2
+                },
+                {
+                    planet: 'Satürn',
+                    event: 'Sorumluluk ve Olgunlaşma',
+                    desc: 'Satürn geçişi, hayatınızda önemli sorumluluklar almanız gereken bir döneme işaret ediyor. Uzun vadeli planlar yapın ve temelleri güçlendirin.',
+                    months: 5
+                },
+                {
+                    planet: 'Venüs',
+                    event: 'Aşk ve İlişkiler',
+                    desc: 'Venüs\'ün harmonik konumu, romantik ilişkilerde güzel gelişmeler vaat ediyor. Yeni birisiyle tanışabilir veya mevcut ilişkiniz derinleşebilir.',
+                    months: 3
+                },
+                {
+                    planet: 'Mars',
+                    event: 'Enerji ve Motivasyon Artışı',
+                    desc: 'Mars\'ın güçlü etkisi, hedeflerinize ulaşmak için gereken enerji ve cesareti size kazandıracak. Spor ve fiziksel aktivitelere yönelmek için uygun zaman.',
+                    months: 4
+                },
+                {
+                    planet: 'Merkür',
+                    event: 'İletişim ve Öğrenme',
+                    desc: 'Merkür\'ün olumlu konumu, yeni bilgiler öğrenmek, kurslar almak ve iletişim becerilerinizi geliştirmek için mükemmel bir dönem.',
+                    months: 6
+                },
+                {
+                    planet: 'Uranüs',
+                    event: 'Beklenmedik Değişimler',
+                    desc: 'Uranüs etkisi, hayatınızda sürpriz gelişmeler ve ani değişiklikler getirebilir. Esnekliğinizi koruyun ve yeni fırsatlara açık olun.',
+                    months: 8
+                },
+                {
+                    planet: 'Neptün',
+                    event: 'Ruhsal Uyanış',
+                    desc: 'Neptün\'ün etkisi, içsel yolculuğunuzu derinleştiriyor. Meditasyon, sanat ve yaratıcılığa yönelmek size fayda sağlayacak.',
+                    months: 7
+                },
+                {
+                    planet: 'Ay',
+                    event: 'Duygusal Yenilenme',
+                    desc: 'Dolunay ve yeni ay etkileri, duygusal döngülerinizi tamamlama ve yeni başlangıçlar yapma fırsatı sunuyor.',
+                    months: 1
+                }
+            ];
+            
+            transits.forEach(transit => {
+                const eventDate = new Date(now);
+                eventDate.setMonth(eventDate.getMonth() + transit.months);
+                events.push({
+                    date: eventDate,
+                    title: `${transit.planet} Geçişi: ${transit.event}`,
+                    description: transit.desc
+                });
+            });
+            
+            // Sort by date
+            events.sort((a, b) => a.date - b.date);
+            
+            return events;
+        }
+        
+        document.getElementById('birthForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const birthDate = new Date(document.getElementById('birthDate').value);
+            const birthTime = document.getElementById('birthTime').value;
+            const birthPlace = document.getElementById('birthPlace').value;
+            
+            const chart = generateNatalChart(birthDate, birthTime);
+            const upcomingEvents = generateUpcomingEvents(birthDate);
+            
+            // Display natal chart
+            let chartHTML = '';
+            chart.planets.forEach(planet => {
+                chartHTML += `
+                    <div class="planet-item">
+                        <div>
+                            <span class="planet-name">${planet.name}</span>
+                            <span class="planet-sign">${planet.sign} burcunda</span>
+                        </div>
+                        <div style="font-size: 0.95rem; color: var(--moon-silver); max-width: 60%;">
+                            ${planet.meaning}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('natalChart').innerHTML = chartHTML;
+            
+            // Display upcoming events
+            let eventsHTML = '';
+            upcomingEvents.forEach(event => {
+                const dateStr = event.date.toLocaleDateString('tr-TR', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                eventsHTML += `
+                    <div class="transit-item">
+                        <div class="transit-date">📅 ${dateStr}</div>
+                        <div class="transit-desc">
+                            <strong>${event.title}</strong><br>
+                            ${event.description}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('upcomingEvents').innerHTML = eventsHTML;
+            
+            // Display sign information
+            document.getElementById('sunSign').innerHTML = `
+                <strong>${chart.sunSign.name}</strong> (${chart.sunSign.element} elementi)<br>
+                Yönetici gezegen: ${chart.sunSign.ruler}
+            `;
+            document.getElementById('moonSign').innerHTML = `
+                <strong>${chart.moonSign.name}</strong> (${chart.moonSign.element} elementi)<br>
+                Duygusal tepkilerinizi ve iç dünyanızı yansıtır
+            `;
+            document.getElementById('risingSign').innerHTML = `
+                <strong>${chart.risingSign.name}</strong> (${chart.risingSign.element} elementi)<br>
+                Dış görünümünüz ve ilk izlenimleriniz
+            `;
+            
+            // Show results
+            document.getElementById('results').classList.add('active');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
